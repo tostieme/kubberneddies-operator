@@ -1,8 +1,21 @@
 # kubberneddies-operator
-// TODO(user): Add simple overview of use/purpose
+I want to rebuilt the auto unseal feature of vault.
+Operator checks if status of vault is sealed
+    -> Yes: Unseal 
+    -> No: Do nassing
+
+Uses the Kubebuilder Framework
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+Use custom CRD to provide a store type:
+    - Local
+    - AWS KMS
+    - Another Vault
+    - I dunno man
+
+Controller will reconcile every 30 seconds and unseal the vault (if sealed) with the keys that are stored
+in the store provided in the CRD. Fot this to work you have to also provide the vault adress 
+(maybe not since the internal adress should always be the same)
 
 ## Getting Started
 
