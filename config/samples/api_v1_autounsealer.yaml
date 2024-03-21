@@ -1,0 +1,16 @@
+apiVersion: api.tostieme.me/v1
+kind: AutoUnsealer
+metadata:
+  labels:
+    app.kubernetes.io/name: autounsealer
+    app.kubernetes.io/instance: autounsealer-sample
+    app.kubernetes.io/part-of: kubberneddies-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: kubberneddies-operator
+  name: autounsealer-sample
+spec:
+  # TODO(user): Add fields here
+  adress: http://127.0.0.1:8200
+  store:
+    - type: local
+      path: tmp/keys/
