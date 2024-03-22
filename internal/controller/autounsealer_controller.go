@@ -17,8 +17,11 @@ limitations under the License.
 package controller
 
 import (
+	"bytes"
 	"context"
-	"io"
+	"encoding/json"
+
+	// "io"
 	"net/http"
 	"time"
 
@@ -50,11 +53,6 @@ type AutoUnsealerReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.0/pkg/reconcile
 func (r *AutoUnsealerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	// TODO(user): your logic here
-	log.Info("Request Namespace: ", req.Namespace)
-	log.Info("Request Name: ", req.Name)
-	// l := log.FromContext(ctx)
-	log.Info("Reconcile called")
 	unsealer := &apiv1.AutoUnsealer{}
 	if err := r.Get(ctx, req.NamespacedName, unsealer); err != nil {
 		return ctrl.Result{}, nil
@@ -69,14 +67,27 @@ func (r *AutoUnsealerReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	defer response.Body.Close()
 
 	// Read response body
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		log.Error("Error reading response body:", err)
-		return ctrl.Result{}, nil
+	body := map[string]any{}
+	json.NewDecoder(response.Body).Decode(&body)
+	if body["sealed"] == true {
+		log.Info("Shaise dat Ding is sealed")
+		// Hier müsse mer reparieren dann
+		// http://127.0.0.1:8200/v1/sys/unseal
+		// Get unseal treshold
+		unsealTreshold := body["t"]
+		for i := 0; i < unsealTreshold.(int); i++ {
+            // get Unseal key
+			data := []byte(`{"key":"abc"`)
+			http.Post(adress+"/v1/sys/unseal", "application/json", bytes.NewBuffer(data))
+		}
 	}
 
-	log.Info(string(body))
 	return ctrl.Result{RequeueAfter: time.Duration(30 * time.Second)}, nil
+}
+
+func getUnsealKey() []byte{
+
+    return []byte(`{"key":"abc"`)
 }
 
 // SetupWithManager sets up the controller with the Manager.
